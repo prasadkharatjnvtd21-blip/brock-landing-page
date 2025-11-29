@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brock - Find Your Dream Home | brock.co.in</title>
+    <meta name="description" content="Discover, buy, rent, or invest in properties with Brock. Your trusted real estate platform for residential and commercial properties.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #f59e0b;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .shell {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 80px;
+        }
+
+        @media (max-width: 1024px) {
+            .shell {
+                padding: 0 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .shell {
+                padding: 0 20px;
+            }
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            gap: 40px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 0.25em;
+        }
+
+        .tagline {
+            font-size: 13px;
+            color: var(--text-light);
+            border-left: 2px solid var(--border);
+            padding-left: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #d97706;
+            transform: translateY(-1px);
+        }
+
+        .btn-large {
+            padding: 14px 32px;
+            font-size: 16px;
+        }
+
+        /* Floating Dock */
+        .dock {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            gap: 8px;
+            z-index: 200;
+            border: 1px solid var(--border);
+        }
+
+        .dock-item {
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .dock-item:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .dock-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .trust-badge span {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .trust-badge strong {
+            color: var(--text-dark);
+            font-size: 18px;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: var(--bg-light);
+            padding: 6px;
+            border-radius: 10px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .tab.active {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            color: var(--primary);
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Section Styling */
+        section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: var(--bg-light);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 32px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 32px;
+        }
+
+        .step h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .step p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Properties Grid */
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .property-image {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
+        }
+
+        .property-content {
+            padding: 24px;
+        }
+
+        .property-price {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .property-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .property-location {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .property-features {
+            display: flex;
+            gap: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .property-feature {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Programs Section */
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .program-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            border: 2px solid var(--border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .program-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .program-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--secondary), #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 36px;
+        }
+
+        .program-card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .program-card p {
+            color: var(--text-light);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* Calculators Section */
+        .calculators {
+            background: var(--bg-light);
+        }
+
+        .calculators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border);
+        }
+
+        .calculator-card h3 {
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .calculator-result {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .calculator-result strong {
+            display: block;
+            font-size: 32px;
+            color: var(--primary);
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about-image {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
+        }
+
+        .about-content h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+        }
+
+        .about-content p {
+            font-size: 18px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 36px;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat span {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--bg-light);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 48px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .contact-form h3 {
+            font-size: 28px;
+            margin-bottom: 32px;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .contact-info h3 {
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .contact-item-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .contact-item-content p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .footer-brand p {
+            color: #9ca3af;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .footer-col h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid,
+            .about-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .properties-grid,
+            .programs-grid,
+            .calculators-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .dock {
+                flex-wrap: wrap;
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .section-header h2 {
+                font-size: 32px;
+            }
+
+            .properties-grid,
+            .programs-grid,
+            .calculators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .dock {
+                bottom: 20px;
+                padding: 8px 12px;
+            }
+
+            .dock-item {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        textarea {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="shell">
+            <div class="header-content">
+                <div class="logo-area">
+                    <a href="#" class="logo">Brock</a>
+                    <span class="tagline">Find Your Dream Home</span>
+                </div>
+                <nav>
+                    <a href="#properties">Properties</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#programs">Programs</a>
+                    <a href="#calculators">Calculators</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+                <div class="header-actions">
+                    <a href="#contact" class="btn btn-outline">Sign In</a>
+                    <a href="#contact" class="btn btn-primary">List Property</a>
+                </div>
+                <button class="mobile-menu-btn">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Dock -->
+    <div class="dock">
+        <a href="#hero" class="dock-item active" data-section="hero">Home</a>
+        <a href="#properties" class="dock-item" data-section="properties">Properties</a>
+        <a href="#programs" class="dock-item" data-section="programs">Programs</a>
+        <a href="#calculators" class="dock-item" data-section="calculators">Tools</a>
+        <a href="#contact" class="dock-item" data-section="contact">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="shell">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <h1>Find Your Perfect Home in Minutes</h1>
+                    <p>Discover thousands of verified properties across India. Buy, sell, rent, or invest with confidence on Brock.</p>
+                    <div class="hero-actions">
+                        <a href="#properties" class="btn btn-primary btn-large">Explore Properties</a>
+                        <a href="#contact" class="btn btn-secondary btn-large">List Your Property</a>
+                    </div>
+                    <div class="trust-badge">
+                        <div>
+                            <strong>50,000+</strong>
+                            <span>Properties Listed</span>
+                        </div>
+                        <div>
+                            <strong>10,000+</strong>
+                            <span>Happy Customers</span>
+                        </div>
+                        <div>
+                            <strong>500+</strong>
+                            <span>Cities Covered</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-card">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="buy">Buy</button>
+                        <button class="tab" data-tab="rent">Rent</button>
+                        <button class="tab" data-tab="commercial">Commercial</button>
+                    </div>
+                    <form class="search-form">
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" placeholder="Enter city, locality, or project">
+                        </div>
+                        <div class="form-group">
+                            <label>Property Type</label>
+                            <select>
+                                <option>Apartment</option>
+                                <option>Villa</option>
+                                <option>Independent House</option>
+                                <option>Plot</option>
+                                <option>Studio</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Budget Range</label>
+                            <select>
+                                <option>Below ₹50 Lakhs</option>
+                                <option>₹50L - ₹1 Crore</option>
+                                <option>₹1 Cr - ₹2 Crore</option>
+                                <option>Above ₹2 Crore</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">Search Properties</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="shell">
+            <div class="section-header">
+                <h2>How Brock Works</h2>
+                <p>Your journey to finding the perfect property is just three simple steps away</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-icon">🔍</div>
+                    <h3>Search & Discover</h3>
+                    <p>Browse through thousands of verified properties across India. Use our advanced filters to find exactly what you're looking for.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">📞</div>
+                    <h3>Connect & Visit</h3>
+                    <p>Connect directly with property owners or our verified agents. Schedule site visits at your convenience with zero hassle.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">🏠</div>
+                    <h3>Close the Deal</h3>
+                    <p>Get expert assistance with documentation, legal verification, and home loans. Move into your dream home with complete peace of mind.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Properties Section -->
+    <section id="properties">
+        <div class="shell">
+            <div class="section-header">
+                <h2>Featured Properties</h2>
+                <p>Handpicked properties that match your aspirations and budget</p>
+            </div>
+            <div class="properties-grid">
+                <div class="property-card">
+                    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800" alt="Luxury Apartment" class="property-image">
+                    <div class="property-content">
+                        <div class="property-price">₹1.2 Cr</div>
+                        <div class="property-title">Luxury 3BHK Apartment</div>
+                        <div class="property-location">📍 Whitefield, Bangalore</div>
+                        <div class="property-features">
+                            <span class="property-feature">🛏️ 3 Beds</span>
+                            <span class="property-feature">🚿 2 Baths</span>
+                            <span class="property-feature">📏 1850 sqft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800" alt="Modern Villa" class="property-image">
+                    <div class="property-content">
+                        <div class="property-price">₹2.8 Cr</div>
+                        <div class="property-title">Modern Villa with Pool</div>
+                        <div class="property-location">📍 Gachibowli, Hyderabad</div>
+                        <div class="property-features">
+                            <span class="property-feature">🛏️ 4 Beds</span>
+                            <span class="property-feature">🚿 4 Baths</span>
+                            <span class="property-feature">📏 3200 sqft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800" alt="Penthouse" class="property-image">
+                    <div class="property-content">
+                        <div class="property-price">₹3.5 Cr</div>
+                        <div class="property-title">Sky Penthouse</div>
+                        <div class="property-location">📍 Powai, Mumbai</div>
+                        <div class="property-features">
+                            <span class="property-feature">🛏️ 4 Beds</span>
+                            <span class="property-feature">🚿 3 Baths</span>
+                            <span class="property-feature">📏 2800 sqft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800" alt="Contemporary Home" class="property-image">
+                    <div class="property-content">
+                        <div class="property-price">₹95 L</div>
+                        <div class="property-title">Contemporary 2BHK</div>
+                        <div class="property-location">📍 Noida Extension, Delhi NCR</div>
+                        <div class="property-features">
+                            <span class="property-feature">🛏️ 2 Beds</span>
+                            <span class="property-feature">🚿 2 Baths</span>
+                            <span class="property-feature">📏 1200 sqft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800" alt="Duplex House" class="property-image">
+                    <div class="property-content">
+                        <div class="property-price">₹1.8 Cr</div>
+                        <div class="property-title">Spacious Duplex House</div>
+                        <div class="property-location">📍 HSR Layout, Bangalore</div>
+                        <div class="property-features">
+                            <span class="property-feature">🛏️ 3 Beds</span>
+                            <span class="property-feature">🚿 3 Baths</span>
+                            <span class="property-feature">📏 2400 sqft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800" alt="Studio Apartment" class="property-image">
+                    <div class="property-content">
+                        <div class="property-price">₹45 L</div>
+                        <div class="property-title">Modern Studio Apartment</div>
+                        <div class="property-location">📍 Hinjewadi, Pune</div>
+                        <div class="property-features">
+                            <span class="property-feature">🛏️ 1 Bed</span>
+                            <span class="property-feature">🚿 1 Bath</span>
+                            <span class="property-feature">📏 650 sqft</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs">
+        <div class="shell">
+            <div class="section-header">
+                <h2>Brock Programs</h2>
+                <p>Join our programs and be part of India's fastest-growing real estate platform</p>
+            </div>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <div class="program-icon">📋</div>
+                    <h3>List Your Property</h3>
+                    <p>List your property for FREE and reach millions of potential buyers and tenants. Get maximum visibility with our verified listings.</p>
+                    <a href="#contact" class="btn btn-primary">Get Started</a>
+                </div>
+                <div class="program-card">
+                    <div class="program-icon">🤝</div>
+                    <h3>Refer & Earn</h3>
+                    <p>Refer properties or clients and earn up to ₹50,000 per successful transaction. Turn your network into a revenue stream.</p>
+                    <a href="#contact" class="btn btn-primary">Start Referring</a>
+                </div>
+                <div class="program-card">
+                    <div class="program-icon">💼</div>
+                    <h3>Affiliate Program</h3>
+                    <p>Partner with Brock as an affiliate. Promote our platform and earn attractive commissions on every successful deal.</p>
+                    <a href="#contact" class="btn btn-primary">Become Affiliate</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculators Section -->
+    <section id="calculators" class="calculators">
+        <div class="shell">
+            <div class="section-header">
+                <h2>Property Calculators</h2>
+                <p>Make informed decisions with our smart property calculators</p>
+            </div>
+            <div class="calculators-grid">
+                <!-- EMI Calculator -->
+                <div class="calculator-card">
+                    <h3>EMI Calculator</h3>
+                    <div class="form-group">
+                        <label>Loan Amount (₹)</label>
+                        <input type="number" id="emi-principal" placeholder="5000000" value="5000000">
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (% p.a.)</label>
+                        <input type="number" id="emi-rate" placeholder="8.5" value="8.5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Tenure (Years)</label>
+                        <input type="number" id="emi-tenure" placeholder="20" value="20">
+                    </div>
+                    <button onclick="calculateEMI()" class="btn btn-primary" style="width: 100%;">Calculate EMI</button>
+                    <div class="calculator-result" id="emi-result">
+                        <span>Monthly EMI</span>
+                        <strong>₹0</strong>
+                    </div>
+                </div>
+
+                <!-- LAP Calculator -->
+                <div class="calculator-card">
+                    <h3>Loan Against Property</h3>
+                    <div class="form-group">
+                        <label>Property Value (₹)</label>
+                        <input type="number" id="lap-value" placeholder="10000000" value="10000000">
+                    </div>
+                    <div class="form-group">
+                        <label>LTV Ratio (%)</label>
+                        <input type="number" id="lap-ltv" placeholder="60" value="60" max="75">
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (% p.a.)</label>
+                        <input type="number" id="lap-rate" placeholder="10" value="10" step="0.1">
+                    </div>
+                    <button onclick="calculateLAP()" class="btn btn-primary" style="width: 100%;">Calculate LAP</button>
+                    <div class="calculator-result" id="lap-result">
+                        <span>Maximum Loan Amount</span>
+                        <strong>₹0</strong>
+                    </div>
+                </div>
+
+                <!-- ROI Calculator -->
+                <div class="calculator-card">
+                    <h3>ROI Calculator</h3>
+                    <div class="form-group">
+                        <label>Purchase Price (₹)</label>
+                        <input type="number" id="roi-purchase" placeholder="5000000" value="5000000">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Value (₹)</label>
+                        <input type="number" id="roi-current" placeholder="7000000" value="7000000">
+                    </div>
+                    <div class="form-group">
+                        <label>Holding Period (Years)</label>
+                        <input type="number" id="roi-years" placeholder="5" value="5">
+                    </div>
+                    <button onclick="calculateROI()" class="btn btn-primary" style="width: 100%;">Calculate ROI</button>
+                    <div class="calculator-result" id="roi-result">
+                        <span>Annual ROI</span>
+                        <strong>0%</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="shell">
+            <div class="about-grid">
+                <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800" alt="About Brock" class="about-image">
+                <div class="about-content">
+                    <h2>About Brock</h2>
+                    <p>Brock is India's most trusted real estate platform, connecting property seekers with their dream homes since 2020. We've revolutionized the way people buy, sell, and rent properties across India.</p>
+                    <p>With cutting-edge technology, verified listings, and a dedicated team of real estate experts, we make property transactions transparent, efficient, and hassle-free.</p>
+                    <p>Our mission is to empower every Indian to make informed real estate decisions with confidence and ease.</p>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <strong>500+</strong>
+                            <span>Cities Covered</span>
+                        </div>
+                        <div class="stat">
+                            <strong>50K+</strong>
+                            <span>Properties</span>
+                        </div>
+                        <div class="stat">
+                            <strong>10K+</strong>
+                            <span>Happy Customers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="shell">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+                <p>Have questions? We're here to help you find your perfect property</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-form">
+                    <h3>Send us a message</h3>
+                    <form onsubmit="handleContactForm(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" placeholder="+91 98765 43210" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea placeholder="Tell us about your requirements..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-item-content">
+                            <h4>Email Us</h4>
+                            <p>support@brock.co.in</p>
+                            <p>sales@brock.co.in</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-item-content">
+                            <h4>Call Us</h4>
+                            <p>+91 1800 123 4567 (Toll Free)</p>
+                            <p>Available: Mon-Sat, 9 AM - 7 PM</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-item-content">
+                            <h4>Visit Us</h4>
+                            <p>Brock Technologies Pvt. Ltd.</p>
+                            <p>MG Road, Bangalore - 560001</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🕒</div>
+                        <div class="contact-item-content">
+                            <h4>Business Hours</h4>
+                            <p>Monday - Saturday: 9:00 AM - 7:00 PM</p>
+                            <p>Sunday: 10:00 AM - 5:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="shell">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Brock</h3>
+                    <p>India's most trusted real estate platform. Find, buy, sell, or rent properties with complete transparency and confidence.</p>
+                    <p style="margin-top: 16px; color: #9ca3af;">© 2024 Brock Technologies Pvt. Ltd. All rights reserved.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#properties">Buy Property</a></li>
+                        <li><a href="#properties">Rent Property</a></li>
+                        <li><a href="#programs">List Property</a></li>
+                        <li><a href="#calculators">Calculators</a></li>
+                        <li><a href="#">Home Loans</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Disclaimer</a></li>
+                        <li><a href="#">Sitemap</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Made with ❤️ in India | brock.co.in</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Dock Active State on Scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const dockItems = document.querySelectorAll('.dock-item');
+            
+            let currentSection = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= sectionTop - 200) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            dockItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === currentSection || 
+                    (currentSection === '' && item.getAttribute('data-section') === 'hero')) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Tab Switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // EMI Calculator
+        function calculateEMI() {
+            const principal = parseFloat(document.getElementById('emi-principal').value);
+            const rate = parseFloat(document.getElementById('emi-rate').value) / 12 / 100;
+            const tenure = parseFloat(document.getElementById('emi-tenure').value) * 12;
+            
+            if (principal && rate && tenure) {
+                const emi = principal * rate * Math.pow(1 + rate, tenure) / (Math.pow(1 + rate, tenure) - 1);
+                document.getElementById('emi-result').innerHTML = `
+                    <span>Monthly EMI</span>
+                    <strong>₹${emi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</strong>
+                `;
+            }
+        }
+
+        // LAP Calculator
+        function calculateLAP() {
+            const propertyValue = parseFloat(document.getElementById('lap-value').value);
+            const ltv = parseFloat(document.getElementById('lap-ltv').value);
+            
+            if (propertyValue && ltv) {
+                const loanAmount = (propertyValue * ltv) / 100;
+                document.getElementById('lap-result').innerHTML = `
+                    <span>Maximum Loan Amount</span>
+                    <strong>₹${loanAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</strong>
+                `;
+            }
+        }
+
+        // ROI Calculator
+        function calculateROI() {
+            const purchase = parseFloat(document.getElementById('roi-purchase').value);
+            const current = parseFloat(document.getElementById('roi-current').value);
+            const years = parseFloat(document.getElementById('roi-years').value);
+            
+            if (purchase && current && years) {
+                const totalReturn = ((current - purchase) / purchase) * 100;
+                const annualROI = totalReturn / years;
+                document.getElementById('roi-result').innerHTML = `
+                    <span>Annual ROI</span>
+                    <strong>${annualROI.toFixed(2)}%</strong>
+                `;
+            }
+        }
+
+        // Contact Form Handler
+        function handleContactForm(e) {
+            e.preventDefault();
+            alert('Thank you for contacting Brock! We will get back to you within 24 hours.');
+            e.target.reset();
+        }
+
+        // Initialize calculators with default values
+        window.addEventListener('load', () => {
+            calculateEMI();
+            calculateLAP();
+            calculateROI();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1764348119971,
+      "tag": "0000_numerous_tyrannus",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1764349424913,
+      "tag": "0001_loving_maria_hill",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1764351859705,
+      "tag": "0002_fearless_jocasta",
+      "breakpoints": true
+    }
+  ]
+}
