@@ -16,7 +16,7 @@ const HeaderContent = memo(() => {
           {/* Logo & Tagline - Centered */}
           <Link href="/" className="flex flex-col items-center justify-center gap-0.5" prefetch={true}>
             <Image
-              src="https://pgen.co.in/assets/brock.svg"
+              src="/brock-logo.svg"
               alt="Brock Logo"
               width={120}
               height={40}

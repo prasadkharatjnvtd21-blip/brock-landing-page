@@ -1,9 +1,9 @@
 "use client";
 
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Bed, Bath, Maximize, MapPin, Phone, Mail, Home } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,150 +15,185 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
-// This would normally come from a database
-const allProperties = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
-    price: "₹1.2 Cr",
-    priceValue: 12000000,
-    title: "Luxury 3BHK Apartment",
-    location: "Whitefield, Bangalore",
-    beds: 3,
-    baths: 2,
-    sqft: 1850,
-    availableFor: "buy" as const,
-    description: "A stunning luxury apartment in the heart of Whitefield, featuring modern architecture, premium finishes, and world-class amenities. Perfect for families looking for a blend of comfort and sophistication.",
-    amenities: ["Swimming Pool", "Gym", "Power Backup", "Parking", "Security 24/7", "Children's Play Area"],
-    gallery: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
-    ]
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
-    price: "₹2.8 Cr",
-    priceValue: 28000000,
-    title: "Modern Villa with Pool",
-    location: "Gachibowli, Hyderabad",
-    beds: 4,
-    baths: 4,
-    sqft: 3200,
-    availableFor: "both" as const,
-    description: "Experience luxury living in this spectacular modern villa featuring a private pool, spacious rooms, and contemporary design. Located in the prime area of Gachibowli with excellent connectivity.",
-    amenities: ["Private Pool", "Modular Kitchen", "Garden", "4 Car Parking", "Club House", "Jogging Track"],
-    gallery: [
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
-      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800",
-    ]
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
-    price: "₹3.5 Cr",
-    priceValue: 35000000,
-    title: "Sky Penthouse",
-    location: "Powai, Mumbai",
-    beds: 4,
-    baths: 3,
-    sqft: 2800,
-    availableFor: "buy" as const,
-    description: "Live above the clouds in this exclusive penthouse offering panoramic views of Mumbai. Features include a private terrace, premium interiors, and access to luxury amenities.",
-    amenities: ["Terrace Garden", "Home Theater", "Infinity Pool", "Concierge Service", "Valet Parking", "Sky Lounge"],
-    gallery: [
-      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
-      "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=800",
-    ]
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800",
-    price: "₹95 L",
-    priceValue: 9500000,
-    title: "Contemporary 2BHK",
-    location: "Noida Extension, Delhi NCR",
-    beds: 2,
-    baths: 2,
-    sqft: 1200,
-    availableFor: "rent" as const,
-    description: "A perfect starter home for young professionals and couples. This contemporary 2BHK offers modern amenities, efficient space utilization, and excellent connectivity to major business hubs.",
-    amenities: ["Lift", "Power Backup", "Parking", "Intercom", "Fire Safety", "Rain Water Harvesting"],
-    gallery: [
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800",
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800",
-      "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?w=800",
-    ]
-  },
-  {
-    id: 5,
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
-    price: "₹1.8 Cr",
-    priceValue: 18000000,
-    title: "Spacious Duplex House",
-    location: "HSR Layout, Bangalore",
-    beds: 3,
-    baths: 3,
-    sqft: 2400,
-    availableFor: "rent" as const,
-    description: "Elegant duplex house in the sought-after HSR Layout area. Features include separate living and dining areas, modern kitchen, and a private balcony. Ideal for families seeking space and comfort.",
-    amenities: ["Private Garden", "Reserved Parking", "Store Room", "Balcony", "Vastu Compliant", "Gated Community"],
-    gallery: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
-      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800",
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
-    ]
-  },
-  {
-    id: 6,
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800",
-    price: "₹45 L",
-    priceValue: 4500000,
-    title: "Modern Studio Apartment",
-    location: "Hinjewadi, Pune",
-    beds: 1,
-    baths: 1,
-    sqft: 650,
-    availableFor: "both" as const,
-    description: "Compact and efficient studio apartment perfect for working professionals and students. Located in the IT hub of Pune with easy access to major tech parks and amenities.",
-    amenities: ["High Speed Wifi", "Furnished", "Gym Access", "Cafeteria", "Laundry", "24/7 Security"],
-    gallery: [
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800",
-      "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800",
-      "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800",
-    ]
-  },
-];
+interface Property {
+  id: number;
+  image: string;
+  price: string;
+  priceValue: number;
+  title: string;
+  location: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  availableFor: "buy" | "rent" | "both";
+  description?: string;
+  amenities?: string[];
+  gallery?: string[];
+}
 
 export default function PropertyDetailPage({ params }: { params: { id: string } }) {
-  const property = allProperties.find((p) => p.id === parseInt(params.id));
-
+  const router = useRouter();
+  const [property, setProperty] = useState<Property | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   // Form states
   const [buyForm, setBuyForm] = useState({ name: "", email: "", phone: "", budget: "", message: "" });
   const [rentForm, setRentForm] = useState({ name: "", email: "", phone: "", moveInDate: "", message: "" });
+  const [generalForm, setGeneralForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!property) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/properties?id=${params.id}`);
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            notFound();
+          }
+          throw new Error("Failed to fetch property");
+        }
+        
+        const data = await response.json();
+        setProperty(data);
+      } catch (err: any) {
+        setError(err.message || "Failed to load property");
+        toast.error("Failed to load property details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [params.id]);
 
   // Form handlers
-  const handleBuySubmit = (e: React.FormEvent) => {
+  const handleBuySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Buy Form:", { ...buyForm, property });
-    alert(`Thank you! We'll contact you about ${property.title}`);
-    setBuyForm({ name: "", email: "", phone: "", budget: "", message: "" });
+    if (!property) return;
+    
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/buy-inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: property.id,
+          propertyTitle: property.title,
+          name: buyForm.name,
+          email: buyForm.email,
+          phone: buyForm.phone,
+          budget: buyForm.budget,
+          message: buyForm.message,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit inquiry");
+
+      toast.success(`Thank you! We'll contact you about ${property.title}`);
+      setBuyForm({ name: "", email: "", phone: "", budget: "", message: "" });
+    } catch (error) {
+      toast.error("Failed to submit inquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleRentSubmit = (e: React.FormEvent) => {
+  const handleRentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Rent Form:", { ...rentForm, property });
-    alert(`Thank you! We'll contact you about renting ${property.title}`);
-    setRentForm({ name: "", email: "", phone: "", moveInDate: "", message: "" });
+    if (!property) return;
+    
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/rent-inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: property.id,
+          propertyTitle: property.title,
+          name: rentForm.name,
+          email: rentForm.email,
+          phone: rentForm.phone,
+          moveInDate: rentForm.moveInDate,
+          message: rentForm.message,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit inquiry");
+
+      toast.success(`Thank you! We'll contact you about renting ${property.title}`);
+      setRentForm({ name: "", email: "", phone: "", moveInDate: "", message: "" });
+    } catch (error) {
+      toast.error("Failed to submit inquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const handleGeneralSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!property) return;
+    
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/contact-inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: property.id,
+          propertyTitle: property.title,
+          name: generalForm.name,
+          email: generalForm.email,
+          phone: generalForm.phone,
+          message: generalForm.message,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit inquiry");
+
+      toast.success("Thank you! We'll get back to you soon.");
+      setGeneralForm({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      toast.error("Failed to submit inquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <section className="py-24 min-h-screen">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading property details...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !property) {
+    return (
+      <section className="py-24 min-h-screen">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Property Not Found</h1>
+            <p className="text-gray-600 mb-8">{error || "The property you're looking for doesn't exist."}</p>
+            <Link href="/properties" className="text-blue-600 hover:underline">
+              ← Back to Properties
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -200,27 +235,31 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               </div>
 
               {/* Gallery */}
-              <div className="grid grid-cols-3 gap-4">
-                {property.gallery.map((img, idx) => (
-                  <div key={idx} className="rounded-xl overflow-hidden">
-                    <img
-                      src={img}
-                      alt={`${property.title} ${idx + 1}`}
-                      className="w-full h-40 object-cover hover:scale-105 transition-transform cursor-pointer"
-                    />
-                  </div>
-                ))}
-              </div>
+              {property.gallery && property.gallery.length > 0 && (
+                <div className="grid grid-cols-3 gap-4">
+                  {property.gallery.map((img, idx) => (
+                    <div key={idx} className="rounded-xl overflow-hidden">
+                      <img
+                        src={img}
+                        alt={`${property.title} ${idx + 1}`}
+                        className="w-full h-40 object-cover hover:scale-105 transition-transform cursor-pointer"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Description */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  About This Property
-                </h2>
-                <p className="text-gray-600 leading-relaxed">
-                  {property.description}
-                </p>
-              </div>
+              {property.description && (
+                <div className="bg-white rounded-2xl p-8 border border-gray-200">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    About This Property
+                  </h2>
+                  <p className="text-gray-600 leading-relaxed">
+                    {property.description}
+                  </p>
+                </div>
+              )}
 
               {/* Property Details */}
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
@@ -267,22 +306,24 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               </div>
 
               {/* Amenities */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Amenities
-                </h2>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {property.amenities.map((amenity, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-3 text-gray-700"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-blue-600" />
-                      {amenity}
-                    </div>
-                  ))}
+              {property.amenities && property.amenities.length > 0 && (
+                <div className="bg-white rounded-2xl p-8 border border-gray-200">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    Amenities
+                  </h2>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {property.amenities.map((amenity, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 text-gray-700"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-blue-600" />
+                        {amenity}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Right Column - Contact Card */}
@@ -357,8 +398,8 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                               rows={3}
                             />
                           </div>
-                          <Button type="submit" className="w-full">
-                            Submit Interest
+                          <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting..." : "Submit Interest"}
                           </Button>
                         </form>
                       </DialogContent>
@@ -431,8 +472,8 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                               rows={3}
                             />
                           </div>
-                          <Button type="submit" className="w-full">
-                            Submit Inquiry
+                          <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting..." : "Submit Inquiry"}
                           </Button>
                         </form>
                       </DialogContent>
@@ -444,13 +485,16 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                   <p className="text-sm text-gray-600 mb-4">
                     Or send us a general inquiry:
                   </p>
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleGeneralSubmit}>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Full Name
                       </label>
                       <input
                         type="text"
+                        required
+                        value={generalForm.name}
+                        onChange={(e) => setGeneralForm({ ...generalForm, name: e.target.value })}
                         placeholder="Enter your name"
                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                       />
@@ -462,6 +506,9 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                       </label>
                       <input
                         type="email"
+                        required
+                        value={generalForm.email}
+                        onChange={(e) => setGeneralForm({ ...generalForm, email: e.target.value })}
                         placeholder="Enter your email"
                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                       />
@@ -473,6 +520,9 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                       </label>
                       <input
                         type="tel"
+                        required
+                        value={generalForm.phone}
+                        onChange={(e) => setGeneralForm({ ...generalForm, phone: e.target.value })}
                         placeholder="Enter your phone"
                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                       />
@@ -484,6 +534,9 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                       </label>
                       <textarea
                         rows={4}
+                        required
+                        value={generalForm.message}
+                        onChange={(e) => setGeneralForm({ ...generalForm, message: e.target.value })}
                         placeholder="I'm interested in this property..."
                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 resize-none"
                       />
@@ -491,9 +544,10 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
                     <button
                       type="submit"
-                      className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                      disabled={isSubmitting}
+                      className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Send Inquiry
+                      {isSubmitting ? "Sending..." : "Send Inquiry"}
                     </button>
                   </form>
                 </div>

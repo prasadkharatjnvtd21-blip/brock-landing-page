@@ -661,17 +661,8 @@ export default function PropertiesPage() {
             </div>
           )}
 
-          <div className="text-center mt-12">
-            <Link
-              href="/contact"
-              className="inline-block px-8 py-4 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-md"
-            >
-              View More Properties
-            </Link>
-          </div>
-
           {/* List Property Link */}
-          <div className="text-center mt-6">
+          <div className="text-center mt-12">
             <Dialog open={listDialogOpen} onOpenChange={setListDialogOpen}>
               <DialogTrigger asChild>
                 <button className="text-sm text-gray-600 hover:text-blue-600 underline underline-offset-4 transition-colors">
