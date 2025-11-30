@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, SlidersHorizontal, Home, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -35,32 +36,32 @@ export default function PropertiesPage() {
   const searchParams = useSearchParams();
 
   // ✏️ EDITABLE HERO SECTION CONTENT
-  const heroContent = {
+  const heroContent = useMemo(() => ({
     title: "Your Complete Real Estate Partner",
     description: "We don't just find your dream home—we handle everything. From property search to financing and loan documentation through our trusted partners, every property is legally verified to ensure zero disputes. We customize homes to your exact requirements and take responsibility for all certificates and documentation. Your journey from search to settlement, completely handled.",
-  };
+  }), []);
 
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch properties from API
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/properties");
-        if (!response.ok) throw new Error("Failed to fetch properties");
-        const data = await response.json();
-        setAllProperties(data);
-      } catch (error) {
-        console.error("Failed to load properties:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
+  // Fetch properties from API (optimized with useCallback)
+  const fetchProperties = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/properties");
+      if (!response.ok) throw new Error("Failed to fetch properties");
+      const data = await response.json();
+      setAllProperties(data);
+    } catch (error) {
+      console.error("Failed to load properties:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchProperties();
+  }, [fetchProperties]);
 
   // Initialize search state from URL parameters
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,14 +74,9 @@ export default function PropertiesPage() {
   // Apply URL parameters on mount
   useEffect(() => {
     const location = searchParams.get("location");
-    const type = searchParams.get("type");
     const budget = searchParams.get("budget");
-    const category = searchParams.get("category");
 
-    // Set search term from location
-    if (location) {
-      setSearchTerm(location);
-    }
+    if (location) setSearchTerm(location);
 
     // Map budget to price range filter with exact matching
     if (budget) {
@@ -96,7 +92,7 @@ export default function PropertiesPage() {
     }
 
     // Show filters if any params are present
-    if (location || type || budget || category) {
+    if (location || budget) {
       setShowFilters(true);
     }
   }, [searchParams]);
@@ -113,30 +109,30 @@ export default function PropertiesPage() {
   const [rentDialogOpen, setRentDialogOpen] = useState(false);
   const [listDialogOpen, setListDialogOpen] = useState(false);
 
+  // Optimized filtering and sorting with useMemo
   const filteredAndSortedProperties = useMemo(() => {
     let filtered = [...allProperties];
 
     // Search filter
     if (searchTerm) {
+      const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (property) =>
-          property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          property.location.toLowerCase().includes(searchTerm.toLowerCase())
+          property.title.toLowerCase().includes(term) ||
+          property.location.toLowerCase().includes(term)
       );
     }
 
     // Beds filter
     if (bedsFilter !== "all") {
-      filtered = filtered.filter(
-        (property) => property.beds === parseInt(bedsFilter)
-      );
+      const beds = parseInt(bedsFilter);
+      filtered = filtered.filter((property) => property.beds === beds);
     }
 
     // Baths filter
     if (bathsFilter !== "all") {
-      filtered = filtered.filter(
-        (property) => property.baths === parseInt(bathsFilter)
-      );
+      const baths = parseInt(bathsFilter);
+      filtered = filtered.filter((property) => property.baths === baths);
     }
 
     // Price range filter
@@ -174,24 +170,26 @@ export default function PropertiesPage() {
     return filtered;
   }, [allProperties, searchTerm, bedsFilter, bathsFilter, priceRange, sortBy]);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setSearchTerm("");
     setBedsFilter("all");
     setBathsFilter("all");
     setPriceRange("all");
     setSortBy("default");
-  };
+  }, []);
 
-  const activeFiltersCount = [
-    searchTerm !== "",
-    bedsFilter !== "all",
-    bathsFilter !== "all",
-    priceRange !== "all",
-    sortBy !== "default",
-  ].filter(Boolean).length;
+  const activeFiltersCount = useMemo(() => 
+    [
+      searchTerm !== "",
+      bedsFilter !== "all",
+      bathsFilter !== "all",
+      priceRange !== "all",
+      sortBy !== "default",
+    ].filter(Boolean).length
+  , [searchTerm, bedsFilter, bathsFilter, priceRange, sortBy]);
 
   // Form handlers
-  const handleBuySubmit = async (e: React.FormEvent) => {
+  const handleBuySubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProperty) return;
 
@@ -225,9 +223,9 @@ export default function PropertiesPage() {
     } finally {
       setIsSubmittingBuy(false);
     }
-  };
+  }, [selectedProperty, buyForm]);
 
-  const handleRentSubmit = async (e: React.FormEvent) => {
+  const handleRentSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProperty) return;
 
@@ -261,9 +259,9 @@ export default function PropertiesPage() {
     } finally {
       setIsSubmittingRent(false);
     }
-  };
+  }, [selectedProperty, rentForm]);
 
-  const handleListSubmit = async (e: React.FormEvent) => {
+  const handleListSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmittingList(true);
 
@@ -296,7 +294,7 @@ export default function PropertiesPage() {
     } finally {
       setIsSubmittingList(false);
     }
-  };
+  }, [listForm]);
 
   return (
     <>
@@ -445,11 +443,15 @@ export default function PropertiesPage() {
                   className="bg-white rounded-2xl overflow-hidden border border-gray-200 transition-all hover:-translate-y-2 hover:shadow-xl"
                 >
                   <Link href={`/properties/${property.id}`}>
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-60 object-cover bg-gradient-to-br from-gray-200 to-gray-300"
-                    />
+                    <div className="relative w-full h-60">
+                      <Image
+                        src={property.image}
+                        alt={property.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
                   </Link>
                   <div className="p-6">
                     <div className="text-3xl font-extrabold text-blue-600 mb-2">

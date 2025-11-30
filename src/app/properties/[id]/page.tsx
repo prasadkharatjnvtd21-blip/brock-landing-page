@@ -2,8 +2,9 @@
 
 import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Bed, Bath, Maximize, MapPin, Phone, Mail, Home, X, ChevronLeft, ChevronRight, ZoomIn, Share2, Facebook, Twitter, Copy, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -55,47 +56,50 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
   const [generalForm, setGeneralForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get all images for lightbox (main + gallery)
-  const allImages = property ? [property.image, ...(property.gallery || [])] : [];
+  // Memoize all images for lightbox (main + gallery)
+  const allImages = useMemo(() => 
+    property ? [property.image, ...(property.gallery || [])] : []
+  , [property]);
+
+  // Fetch property data (optimized with useCallback)
+  const fetchProperty = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/properties?id=${params.id}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          notFound();
+        }
+        throw new Error("Failed to fetch property");
+      }
+      
+      const data = await response.json();
+      setProperty(data);
+
+      // Fetch similar properties based on location and beds
+      const allPropsResponse = await fetch("/api/properties?limit=100");
+      if (allPropsResponse.ok) {
+        const allProps = await allPropsResponse.json();
+        const similar = allProps
+          .filter((p: Property) => 
+            p.id !== data.id && 
+            (p.location === data.location || p.beds === data.beds)
+          )
+          .slice(0, 3);
+        setSimilarProperties(similar);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to load property");
+      toast.error("Failed to load property details");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params.id]);
 
   useEffect(() => {
-    const fetchProperty = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(`/api/properties?id=${params.id}`);
-        
-        if (!response.ok) {
-          if (response.status === 404) {
-            notFound();
-          }
-          throw new Error("Failed to fetch property");
-        }
-        
-        const data = await response.json();
-        setProperty(data);
-
-        // Fetch similar properties based on location and beds
-        const allPropsResponse = await fetch("/api/properties?limit=100");
-        if (allPropsResponse.ok) {
-          const allProps = await allPropsResponse.json();
-          const similar = allProps
-            .filter((p: Property) => 
-              p.id !== data.id && 
-              (p.location === data.location || p.beds === data.beds)
-            )
-            .slice(0, 3);
-          setSimilarProperties(similar);
-        }
-      } catch (err: any) {
-        setError(err.message || "Failed to load property");
-        toast.error("Failed to load property details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProperty();
-  }, [params.id]);
+  }, [fetchProperty]);
 
   // Keyboard navigation for lightbox
   useEffect(() => {
@@ -116,22 +120,22 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxOpen, currentImageIndex, allImages.length]);
 
-  const openLightbox = (index: number) => {
+  const openLightbox = useCallback((index: number) => {
     setCurrentImageIndex(index);
     setLightboxOpen(true);
     setImageZoom(1);
-  };
+  }, []);
 
-  const navigateLightbox = (direction: "prev" | "next") => {
+  const navigateLightbox = useCallback((direction: "prev" | "next") => {
     setImageZoom(1);
     if (direction === "prev") {
       setCurrentImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
     } else {
       setCurrentImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
     }
-  };
+  }, [allImages.length]);
 
-  const handleShare = async (platform: "native" | "whatsapp" | "facebook" | "twitter" | "copy") => {
+  const handleShare = useCallback(async (platform: "native" | "whatsapp" | "facebook" | "twitter" | "copy") => {
     const url = window.location.href;
     const text = `Check out this property: ${property?.title}`;
 
@@ -166,10 +170,10 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
         setTimeout(() => setCopied(false), 2000);
         break;
     }
-  };
+  }, [property]);
 
-  // Form handlers
-  const handleBuySubmit = async (e: React.FormEvent) => {
+  // Form handlers (optimized with useCallback)
+  const handleBuySubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!property) return;
     
@@ -198,9 +202,9 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [property, buyForm]);
 
-  const handleRentSubmit = async (e: React.FormEvent) => {
+  const handleRentSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!property) return;
     
@@ -229,9 +233,9 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [property, rentForm]);
 
-  const handleGeneralSubmit = async (e: React.FormEvent) => {
+  const handleGeneralSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!property) return;
     
@@ -259,7 +263,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [property, generalForm]);
 
   if (isLoading) {
     return (
@@ -332,28 +336,33 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
           <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
             {/* Left Column - Images & Details */}
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
-              {/* Main Image */}
-              <div className="rounded-2xl overflow-hidden cursor-pointer" onClick={() => openLightbox(0)}>
-                <img
+              {/* Main Image - Optimized with Next.js Image */}
+              <div className="rounded-2xl overflow-hidden cursor-pointer relative w-full h-[300px] md:h-[500px]" onClick={() => openLightbox(0)}>
+                <Image
                   src={property.image}
                   alt={property.title}
-                  className="w-full h-[300px] md:h-[500px] object-cover hover:scale-105 transition-transform duration-300"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                  priority
                 />
               </div>
 
-              {/* Gallery */}
+              {/* Gallery - Optimized with Next.js Image */}
               {property.gallery && property.gallery.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
                   {property.gallery.map((img, idx) => (
                     <div 
                       key={idx} 
-                      className="rounded-xl overflow-hidden cursor-pointer"
+                      className="rounded-xl overflow-hidden cursor-pointer relative w-full h-32 md:h-40"
                       onClick={() => openLightbox(idx + 1)}
                     >
-                      <img
+                      <Image
                         src={img}
                         alt={`${property.title} ${idx + 1}`}
-                        className="w-full h-32 md:h-40 object-cover hover:scale-105 transition-transform duration-300"
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        className="object-cover hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   ))}
@@ -449,11 +458,15 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                         href={`/properties/${similar.id}`}
                         className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
                       >
-                        <img
-                          src={similar.image}
-                          alt={similar.title}
-                          className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <div className="relative w-full h-40">
+                          <Image
+                            src={similar.image}
+                            alt={similar.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
                         <div className="p-4">
                           <div className="text-lg font-bold text-blue-600 mb-1">
                             {similar.price}

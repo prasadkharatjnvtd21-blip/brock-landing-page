@@ -1,29 +1,126 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Home() {
-  const router = useRouter();
+// Memoized search card component to prevent unnecessary re-renders
+const SearchCard = ({ onSearch }: { onSearch: (params: URLSearchParams) => void }) => {
   const [activeTab, setActiveTab] = useState<"buy" | "rent" | "commercial">("buy");
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("Apartment");
   const [budgetRange, setBudgetRange] = useState("Below ₹50 Lakhs");
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
-    // Build search parameters
     const params = new URLSearchParams();
     if (location) params.set("location", location);
     if (propertyType) params.set("type", propertyType);
     if (budgetRange) params.set("budget", budgetRange);
     params.set("category", activeTab);
     
-    // Navigate to properties page with search parameters
+    onSearch(params);
+  }, [location, propertyType, budgetRange, activeTab, onSearch]);
+
+  return (
+    <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
+      <div className="flex gap-2 mb-6 bg-gray-100 p-1.5 rounded-xl">
+        <button
+          type="button"
+          onClick={() => setActiveTab("buy")}
+          className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            activeTab === "buy"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-900 hover:bg-white"
+          }`}
+        >
+          Buy
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("rent")}
+          className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            activeTab === "rent"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-900 hover:bg-white"
+          }`}
+        >
+          Rent
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("commercial")}
+          className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            activeTab === "commercial"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-900 hover:bg-white"
+          }`}
+        >
+          Commercial
+        </button>
+      </div>
+      <form className="space-y-4" onSubmit={handleSearch}>
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">Location</label>
+          <input
+            type="text"
+            placeholder="Enter city, locality, or project"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition-colors"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">Property Type</label>
+          <select
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition-colors"
+          >
+            <option>Apartment</option>
+            <option>Villa</option>
+            <option>Independent House</option>
+            <option>Plot</option>
+            <option>Studio</option>
+            <option disabled>─────────────</option>
+            <option>Shop</option>
+            <option>Showroom</option>
+            <option>Office Space</option>
+            <option>Commercial Building</option>
+            <option>Warehouse</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">Budget Range</label>
+          <select
+            value={budgetRange}
+            onChange={(e) => setBudgetRange(e.target.value)}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition-colors"
+          >
+            <option>Below ₹50 Lakhs</option>
+            <option>₹50L - ₹1 Crore</option>
+            <option>₹1 Cr - ₹2 Crore</option>
+            <option>Above ₹2 Crore</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="block w-full py-4 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all text-center"
+        >
+          Search Properties
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default function Home() {
+  const router = useRouter();
+
+  const handleSearch = useCallback((params: URLSearchParams) => {
     router.push(`/properties?${params.toString()}`);
-  };
+  }, [router]);
 
   return (
     <>
@@ -70,94 +167,7 @@ export default function Home() {
             </div>
 
             {/* Right - Search Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
-              <div className="flex gap-2 mb-6 bg-gray-100 p-1.5 rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("buy")}
-                  className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                    activeTab === "buy"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-900 hover:bg-white"
-                  }`}
-                >
-                  Buy
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("rent")}
-                  className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                    activeTab === "rent"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-900 hover:bg-white"
-                  }`}
-                >
-                  Rent
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("commercial")}
-                  className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                    activeTab === "commercial"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-900 hover:bg-white"
-                  }`}
-                >
-                  Commercial
-                </button>
-              </div>
-              <form className="space-y-4" onSubmit={handleSearch}>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Location</label>
-                  <input
-                    type="text"
-                    placeholder="Enter city, locality, or project"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Property Type</label>
-                  <select
-                    value={propertyType}
-                    onChange={(e) => setPropertyType(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition-colors"
-                  >
-                    <option>Apartment</option>
-                    <option>Villa</option>
-                    <option>Independent House</option>
-                    <option>Plot</option>
-                    <option>Studio</option>
-                    <option disabled>─────────────</option>
-                    <option>Shop</option>
-                    <option>Showroom</option>
-                    <option>Office Space</option>
-                    <option>Commercial Building</option>
-                    <option>Warehouse</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Budget Range</label>
-                  <select
-                    value={budgetRange}
-                    onChange={(e) => setBudgetRange(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition-colors"
-                  >
-                    <option>Below ₹50 Lakhs</option>
-                    <option>₹50L - ₹1 Crore</option>
-                    <option>₹1 Cr - ₹2 Crore</option>
-                    <option>Above ₹2 Crore</option>
-                  </select>
-                </div>
-                <button
-                  type="submit"
-                  className="block w-full py-4 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all text-center"
-                >
-                  Search Properties
-                </button>
-              </form>
-            </div>
+            <SearchCard onSearch={handleSearch} />
           </div>
         </div>
       </section>
