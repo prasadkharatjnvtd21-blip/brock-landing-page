@@ -6,7 +6,15 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "start:prod": "NODE_ENV=production next start -p 3000",
+        "lint": "next lint",
+        "db:generate": "drizzle-kit generate",
+        "db:push": "drizzle-kit push",
+        "db:studio": "drizzle-kit studio",
+        "db:seed": "bun src/db/seeds/properties.ts",
+        "deploy:pm2": "npm run build && pm2 start ecosystem.config.js --env production",
+        "deploy:vercel": "vercel --prod",
+        "test:build": "npm run build && npm run start:prod"
     },
     "dependencies": {
         "@babel/parser": "^7.28.5",
